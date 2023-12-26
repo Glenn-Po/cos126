@@ -1,0 +1,92 @@
+/**********************************************************************
+ *  Description:
+ **************************************************************************/
+
+10: 81FF   read R[1]                     // read m1 into register, R[1]
+11: 7201   R[2] <- 0001                  // store 1 in to register, R[2]
+12: 1312   R[3] <- R[1] + R[2]           // add m1 + 1 which will equal 0 if m1=
+                                            FFFF
+13: C339   if (R[3] == 0) goto 39        // if m1=FFFF as seen above, then go to
+                                         31 where we will print m1 and then halt
+14: 82FF   read R[2]                     //read m2 into register 2
+15: 83FF   read R[3]                     //read m3 into register 3
+16: 84FF   read R[4]                     //read m4 into register 4
+17: 85FF   read R[5]                     //read p1 into R5
+18: 86FF   read R[6]                     //read p2 into R6
+19: 87FF   read R[7]                     //read p3 into R7
+
+1A: 4851   R[8] <- R[5] ^ R[1]           // xor m1 and p1; store in R8
+1B: 4982   R[9] <- R[8] ^ R[2]           
+1C: 4A94   R[A] <- R[9] ^ R[4]           //store c1 in R[A]
+
+1D: 4861   R[8] <- R[6] ^ R[1]           // xor m1 and p2; store in R8
+1E: 4983   R[9] <- R[8] ^ R[3]           
+1F: 4B94   R[B] <- R[9] ^ R[4]           //store c2 in R[B]
+
+20: 4872   R[8] <- R[7] ^ R[2]           // xor m2 and p3; store in R8
+21: 4983   R[9] <- R[8] ^ R[3]           
+22: 4C94   R[C] <- R[9] ^ R[4]           //store c3 in R[C]
+
+-----------------------------------------------------------
+----------- Checking conditions to flip bits --------------
+-----------------------------------------------------------
+
+
+---------- Condititon 1: c1 + c2 + c3 == 3 -------------
+23: 18AB   R[8] <- R[A] + R[B]           //store c1 + c2 in R[8]
+24: 198C   R[9] <- R[8] + R[C]           //add c3 to it and store in R[9]
+25: 7D03   R[D] <- 0003                  
+26: 2D9D   R[D] <- R[9] - R[D]           // subtract 3 from R[9] and store in D
+27: 7E01   R[E] <- 0001                  //store 1 in R[E]
+
+28: CD50   if (R[D] == 0) goto 50        // CONDITION 1
+
+
+---------- Condititon 2: c1 + c2 == 2 -------------
+29: 7D02   R[D] <- 0002                  //set D to 2 for next condition
+2A: 2D8D   R[D] <- R[8] - R[D]           // subtract 2 from R[8] and store in D
+2B: CD54   if (R[D] == 0) goto 54        //CONDITION 2
+
+
+---------- Condititon 3: c1 + c3 == 2 -------------
+2C: 7D02   R[D] <- 0002                  //reset for next condition
+2D: 1FAC   R[F] <- R[A] + R[C]            // add c1 and c3
+2E: 2DFD   R[D] <- R[F] - R[D]           // then subtract 2
+2F: CD56   if (R[D] == 0) goto 56        //CONDITION 3
+
+
+---------- Condititon 4: c2 + c3 == 2 -------------
+30: 7D02   R[D] <- 0002                  //reset for next condition
+31: 1FBC   R[F] <- R[B] + R[C]           // add c2 and c3
+32: 2DFD   R[D] <- R[F] - R[D]           // then subtract 2
+33: CD58   if (R[D] == 0) goto 58        //CONDITION 4
+
+
+34: 91FF   write R[1]                    //print m1
+35: 92FF   write R[2]                    //print m2
+36: 93FF   write R[3]                    //print m3
+37: 94FF   write R[4]                    //print m4
+
+38: C010   goto 10                       //loop back 
+
+39: 91FF   write R[1]                    
+3A: 0000   halt                          // stop program
+
+
+
+
+-- Body of condition 1 ---
+50: 444E   R[4] <- R[4] ^ R[E]           // XOR with 1
+51: C034   goto 34                       // Return to 'main' loop
+
+-- Body of Condition 2 ---
+54: 411E   R[1] <- R[1] ^ R[E]           // XOR with 1
+55: C034   goto 34                       // Return to 'main' loop
+
+-- Body of Condition 3 ---
+56: 422E   R[2] <- R[2] ^ R[E]           // XOR with 1
+57: C034   goto 34                       // Return to 'main' loop
+
+-- Body of Condition 4 ---
+58: 433E   R[3] <- R[3] ^ R[E]           // XOR with 1
+59: C034   goto 34                       // Return to 'main' loop

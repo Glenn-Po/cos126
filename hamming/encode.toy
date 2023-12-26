@@ -1,0 +1,35 @@
+/**********************************************************************
+ *  Description:
+ **************************************************************************/
+10: 81FF   read R[1]                     // read m1 into register 1
+11: 7201   R[2] <- 0001                  // store 1 in to register 2
+12: 1312   R[3] <- R[1] + R[2]           // add m1 + 1 which will equal 0 if m1=
+                                            FFFF
+13: C325   if (R[3] == 0) goto 25        // if m1=FFFF as seen above, then go to
+                                         31 where we will print m1 and then halt
+14: 82FF   read R[2]                     //read m2 into register 2
+15: 83FF   read R[3]                     //read m3 into register 3
+16: 84FF   read R[4]                     //read m4 into register 4
+17: 4512   R[5] <- R[1] ^ R[2]           //xor m1 and m2 and store in R5
+18: 4654   R[6] <- R[5] ^ R[4]           // store p1 in R6
+
+19: 4513   R[5] <- R[1] ^ R[3]           //xor m1 and m3 and store in R5
+1A: 4754   R[7] <- R[5] ^ R[4]           // store p2 in R7
+
+1B: 4523   R[5] <- R[2] ^ R[3]           //xor m2 and m3 and store in R5
+1C: 4854   R[8] <- R[5] ^ R[4]           // store p3 in R8
+
+1D: 91FF   write R[1]                    //print m1
+1E: 92FF   write R[2]                    //print m2
+1F: 93FF   write R[3]                    //print m3
+20: 94FF   write R[4]                    //print m4
+
+21: 96FF   write R[6]                    //print p1
+22: 97FF   write R[7]                    //print p2
+23: 98FF   write R[8]                    //print p3
+
+24: C010   goto 10                       //loop back
+
+25: 91FF   write R[1]
+26: 0000   halt                          // stop program
+
